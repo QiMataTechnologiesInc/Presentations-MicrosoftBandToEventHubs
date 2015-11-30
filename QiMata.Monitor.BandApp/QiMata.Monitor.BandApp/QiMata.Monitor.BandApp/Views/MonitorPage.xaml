@@ -3,5 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:views="clr-namespace:QiMata.Monitor.BandApp.Views;assembly=QiMata.Monitor.BandApp"
              x:Class="QiMata.Monitor.BandApp.Views.MonitorPage">
-  <Button Text="Start" HorizontalOptions="FillAndExpand" VerticalOptions="FillAndExpand" Command="{Binding OnClick}"></Button>
+  <StackLayout VerticalOptions="StartAndExpand" HorizontalOptions="FillAndExpand">
+  <Entry Text="{Binding HubName}" Placeholder="Hub Name" HorizontalOptions="FillAndExpand" VerticalOptions="Start"></Entry>
+  <Entry Text="{Binding DeviceName}" Placeholder="Device Name" HorizontalOptions="FillAndExpand" VerticalOptions="Start"></Entry>
+  <Entry Text="{Binding ServiceNamespace}" Placeholder="Service Namespace" HorizontalOptions="FillAndExpand" VerticalOptions="Start"></Entry>
+  <Entry Text="{Binding SharedAccessSignature}" Placeholder="Shared Access Signature" HorizontalOptions="FillAndExpand" VerticalOptions="Start"></Entry>
+  <Button Text="Start" HorizontalOptions="FillAndExpand" VerticalOptions="Start" Command="{Binding OnClick}"></Button>
+    </StackLayout>
 </views:BaseClientContentPage>

@@ -25,10 +25,6 @@ namespace QiMata.Monitor.BandApp.ViewModels
             : base(info, bandClient)
         {
             _bandHeartRateReadings = new ConcurrentQueue<BandHeartRateReading>();
-            HubName = "test";
-            DeviceName = "TestDevice";
-            ServiceNamespace = "bandapptest";
-            SharedAccessSignature = "Endpoint=sb://bandapptest.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=bpvFoZ+tmfm1S1dK1hJfv0tarkhLr9e/NOffm4CCIis=";
         }
 
         public override async Task Prepare()
@@ -36,28 +32,10 @@ namespace QiMata.Monitor.BandApp.ViewModels
             BandClient = await BandClientManager.Instance.ConnectAsync(BandInfo);
             _sensorManager = BandClient.SensorManager;
             await _sensorManager.HeartRate.RequestUserConsent();
-            _sensorManager.HeartRate.ReadingChanged += (sender, args) =>
+            _sensorManager.HeartRate.ReadingChanged += async (sender, args) =>
             {
-                _bandHeartRateReadings.Enqueue(args.SensorReading);
-
-                if (_uploadEventTask == null || (_uploadEventTask != null && _uploadEventTask.IsCompleted))
-                {
-                    _uploadEventTask = UploadToEventHubs();
-                }
+                await _eventHubSasClient.SendMessageAsync(JsonConvert.SerializeObject(args.SensorReading));
             };
-        }
-
-        private async Task UploadToEventHubs()
-        {
-            if (_eventHubSasClient != null)
-            {
-                while (!_bandHeartRateReadings.IsEmpty)
-                {
-                    BandHeartRateReading reading;
-                    _bandHeartRateReadings.TryDequeue(out reading);
-                    await _eventHubSasClient.SendMessageAsync(JsonConvert.SerializeObject(reading));
-                }
-            }
         }
 
         private string _sharedAccessSignature;
